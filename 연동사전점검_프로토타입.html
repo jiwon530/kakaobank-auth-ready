@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연동 사전점검 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{--ink:#111;--txt:#333;--sub:#6e6e73;--mute:#9b9ba0;--line:#e5e5e5;--side:#f5f5f5;--blue:#4a6ee0;--banner:#5d5f6f;--navy:#060d2b;--navyline:#1b2347;--btn:#4b5164;--red:#e0473c;--teal:#3f8f8a;--teal2:#e9f4f3;--sel:#eef1fb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Pretendard,-apple-system,sans-serif;color:var(--txt);background:#fff;font-size:13px;letter-spacing:-0.01em}
+button,select{font-family:inherit;cursor:pointer}
+.proto{background:#f0f0f0;color:var(--sub);text-align:center;font-size:11px;padding:5px}
+header{display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 40px;border-bottom:1px solid var(--line);background:#fff}
+.logo{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-0.03em}.logo b{font-weight:400;font-size:14px;margin-left:3px}
+nav a{margin-left:26px;font-size:12px;color:var(--ink)}
+.wrap{display:flex;min-height:calc(100vh - 76px)}
+aside{width:196px;background:var(--side);padding:18px 0;flex-shrink:0}
+.m{padding:9px 28px;font-weight:700;font-size:13.5px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.m.on{color:var(--blue)}
+.ar{width:18px;height:18px;border-radius:50%;background:#e4e4e4;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#555}
+.sub{background:#fff;padding:6px 0 8px;margin:2px 0}
+.s{padding:6px 34px;font-size:12px;color:#444;cursor:pointer}
+.s.on{color:var(--blue);font-weight:600}
+.new{font-size:9.5px;font-weight:700;color:var(--blue);border:1px solid var(--blue);padding:0 5px;border-radius:99px}
+main{flex:1;padding:22px 40px 70px;max-width:640px;box-sizing:content-box}
+.banner{background:var(--banner);color:#fff;border-radius:16px;padding:30px 28px;height:152px;position:relative}
+.banner h1{font-size:19px;font-weight:700;margin-bottom:10px}.banner p{font-size:11.5px;opacity:.9;line-height:1.6}
+.ill{position:absolute;right:38px;bottom:26px;width:46px;height:54px;background:#7d8090}
+.ill:after{content:'</>';position:absolute;right:-16px;bottom:-6px;width:30px;height:20px;background:#eceef3;color:#555;font-size:9px;display:flex;align-items:center;justify-content:center}
+.who{position:absolute;right:28px;top:26px;font-size:11px;opacity:.85;text-align:right;line-height:1.6}
+h3{font-size:15px;color:var(--ink);margin:38px 0 4px}
+.cap{color:var(--mute);font-size:11.5px;margin-bottom:8px}
+ul.b{padding-left:16px;font-size:11.5px;line-height:1.75;color:var(--txt)}
+h4{font-size:14.5px;color:var(--blue);font-weight:600;margin:36px 0 4px}
+.hint{font-size:11.5px;color:var(--txt);margin-bottom:14px}
+.lab{font-size:11.5px;font-weight:700;color:var(--ink);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.lab small{font-weight:400;color:var(--mute)}
+.ed{background:var(--navy);border-radius:2px}
+.ebar{display:flex;justify-content:flex-end;gap:6px;padding:12px 14px;border-bottom:1px solid var(--navyline)}
+.eb{background:var(--btn);color:#fff;font-size:10.5px;padding:6px 9px;border:0;border-radius:2px}
+.eb.on{background:#7a8197}
+.eb.dark{background:#1d2442}
+.code{color:#d9ddeb;font-family:Pretendard,monospace;font-size:11px;line-height:1.75;padding:22px 24px;white-space:pre}
+.cm{color:#7f89ad}.ok{color:#6fc3bc}.prop{color:#8fb1ff}
+.scn{display:flex;align-items:flex-start;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.scn input{margin-top:2px;accent-color:var(--blue)}
+.scn b{font-size:12.5px;color:var(--ink);font-weight:600}.scn .c{font-size:10.5px;color:var(--sub);margin-left:5px}
+.scn p{font-size:11.5px;color:var(--sub);margin-top:2px;line-height:1.5}
+.pol{margin-top:6px;display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt)}
+.pol select{font-size:11.5px;border:1px solid #cfd3de;border-radius:2px;padding:3px 6px;background:#fff}
+.runbar{display:flex;align-items:center;gap:10px;margin-top:14px}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:2px;font-size:12px;padding:9px 16px}
+.btn.gray{background:var(--btn)}
+.btn:disabled{opacity:.4;cursor:default}
+.prog{width:160px;height:3px;background:#e5e7ee;display:none}.prog i{display:block;height:100%;width:0;background:var(--blue);transition:width .25s}
+.msg{font-size:11.5px;color:var(--sub)}
+.sum{font-size:11.5px;color:var(--sub);margin-bottom:8px}.sum b{color:var(--ink)}.sum .f{color:var(--red)}.sum .p{color:var(--teal)}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{font-weight:600;color:var(--ink);text-align:left;padding:8px 8px;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);background:#fafafa}
+th small{font-weight:400;color:var(--mute);margin-left:4px}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;color:var(--txt)}
+td b{color:var(--ink);font-weight:600}
+td .c{font-size:10.5px;color:var(--mute)}
+tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf6f5}tr.sel td{background:var(--sel)}tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+.v{font-weight:700;white-space:nowrap}.v-pass{color:var(--teal)}.v-fail{color:var(--red)}
+.ai{margin-top:12px;background:#f6f7f9;border-radius:6px;padding:16px 18px;font-size:12px;line-height:1.65}
+.ai .t{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai .tag{font-size:10.5px;font-weight:700;color:#fff;background:var(--blue);padding:2px 7px;border-radius:2px}
+.ai h5{font-size:13px;color:var(--ink)}
+.ai .k{font-size:10.5px;color:var(--mute);margin-top:8px}
+.ai .src{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:11px;color:var(--sub)}
+.ai .note{font-size:10.5px;color:var(--mute);margin-top:6px}
+.chk{font-size:11.5px;line-height:2}.chk label{display:flex;align-items:center;gap:8px}.chk input{accent-color:var(--blue)}
+.chk span.who2{margin-left:auto;color:var(--mute);font-size:10.5px}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:12px}
+.foot .msg{max-width:340px;line-height:1.5}
+.err{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:12px;color:var(--ink)}
+.err .tri{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid var(--red);position:relative}
+.err a{text-decoration:underline;color:var(--ink)}
+.jump{margin-top:12px;border:1px solid var(--blue);color:var(--blue);border-radius:2px;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.jump small{font-weight:400;color:var(--sub)}
+.hide{display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 16px;border-radius:2px;font-size:12px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
+.form{border-top:1px solid var(--ink);margin-top:6px}
+.fr{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.fl{width:104px;flex-shrink:0;font-size:12px;font-weight:600;color:var(--ink)}
+.fi{flex:1;background:#f7f7f8;border:1px solid #e2e2e2;border-radius:2px;padding:7px 10px;font-size:12px;color:var(--txt)}
+.okc{font-size:11.5px;font-weight:600;color:var(--teal);white-space:nowrap}
+.ptag{font-size:10.5px;font-weight:600;color:var(--blue);border:1px solid var(--blue);border-radius:2px;padding:2px 6px;white-space:nowrap}
+.seg{display:flex;gap:4px}.seg button{font-size:11.5px;padding:6px 10px;border:1px solid #cfd3de;background:#fff;color:var(--txt);border-radius:2px}.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.fnote{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;font-size:11px;color:var(--sub);line-height:1.5}
+.ill3{position:absolute;right:34px;bottom:22px;width:84px;height:70px}
+.ill3 .card{position:absolute;left:0;top:0;width:52px;height:46px;background:#7d8090;border-radius:4px;padding:10px 9px;display:flex;flex-direction:column;gap:7px}
+.ill3 .card i{display:block;height:2px;background:#9a9daa}.ill3 .card i:nth-child(2){width:65%}.ill3 .card i:nth-child(3){width:80%}
+.ill3 .lens{position:absolute;left:30px;top:22px;width:34px;height:34px;border-radius:50%;border:4px solid #eceef3;background:rgba(93,95,111,.85);display:flex;align-items:center;justify-content:center}
+.ill3 .lens span{color:#8fb1ff;font-size:13px;font-weight:700}
+.ill3 .handle{position:absolute;left:61px;top:52px;width:5px;height:15px;background:#eceef3;border-radius:2px;transform:rotate(-45deg)}
+</style>
+</head>
+<body>
+<div class="proto">제안 프로토타입 · 실제 서비스 화면이 아니며, 결과는 모두 가상 데이터입니다</div>
+<header>
+  <div class="logo">kakaobank<b>인증서</b></div>
+  <nav><a>체험하기</a><a>제휴안내</a><a>API 개발가이드</a><a>FAQ</a></nav>
+</header>
+<div class="wrap">
+<aside>
+  <div class="m">정책 및 공통가이드</div>
+  <div class="m">API별 가이드 <span class="ar">⌄</span></div>
+  <div class="m" id="mTest">API 테스트 <span class="ar" id="arTest">⌃</span></div>
+  <div class="sub" id="subTest">
+    <div class="s">접근토큰발급 API</div>
+    <div class="s" id="sOld" data-page="old">본인확인 API</div>
+    <div class="s">전자서명 API</div>
+    <div class="s">뱅킹 B2B API</div>
+    <div class="s">- 부가정보제공 API</div>
+    <div class="s">- 계좌인증 API</div>
+    <div class="s">- 계좌연결 API</div>
+  </div>
+  <div class="m on" id="mCheck" data-page="new">연동 사전점검 <span class="new">NEW</span></div>
+  <div class="m">오류코드</div>
+  <div class="m">디자인가이드</div>
+</aside>
+
+<main id="pageNew">
+  <div class="banner">
+    <h1>연동 사전점검</h1>
+    <p>API 테스트로 요청과 응답을 확인했다면,<br>실패 상황까지 우리 서버가 올바르게 처리하는지 운영 전에 점검해 보세요.</p>
+    <div class="ill3"><div class="card"><i></i><i></i><i></i></div><div class="lens"><span>✓</span></div><div class="handle"></div></div>
+  </div>
+
+  <h3>본인확인 흐름 사전점검</h3>
+  <p class="cap">카카오뱅크 인증서 본인확인 API를 연동한 제휴사 테스트 서버 점검</p>
+  <ul class="b">
+    <li>별도 로그인 없이, 계약된 제휴사에 발급되는 사전점검 전용 토큰으로 이용합니다. 운영 credential은 사용하지 않습니다.</li>
+    <li>샌드박스가 정상 · 실패 상황을 재현하고, 제휴사 테스트 서버의 점검 결과 조회 API로 최종 처리 결과를 받아 판정합니다.</li>
+    <li>점검 결과 조회 API는 이번 제안에서 새로 정의하는 연동 규격입니다.</li>
+    <li>점검 결과서는 연동 확인 자료이며, 보안 인증이나 보증이 아닙니다.</li>
+  </ul>
+
+  <h4>① 테스트 환경 연결 및 검증 설정</h4>
+  <p class="hint">계약된 이용기관의 점검 권한을 확인한 뒤, 제휴사 테스트 서버를 연결해 인증 결과 처리를 검증합니다.</p>
+  <div class="form">
+    <div class="fr"><span class="fl">corp_id</span><span class="fi">ASHOP_CORP_01</span></div>
+    <div class="fr"><span class="fl">사전점검용 인증 토큰</span><span class="fi">PRECHECK-••••••••••••</span><span class="ptag" style="color:var(--sub);border-color:#cfd3de">전용 발급 · 기간 제한</span></div>
+    <div class="fr" style="background:#f9fafc"><span class="fl">계약 정보</span><span style="flex:1;font-size:12px;line-height:1.7;color:var(--txt)">A쇼핑몰 · 본인확인 API<br><span style="color:var(--sub)">계약 항목</span> CI, DI, NAME &nbsp;·&nbsp; <span style="color:var(--sub)">등록 테스트 도메인</span> test.ashop.example</span><span class="okc">✓ 계약 및 점검 권한 확인 완료</span></div>
+    <div class="fr"><span class="fl">결과 수신 방식</span><div class="seg"><button id="mCb" class="on">콜백 (callback_url)</button><button id="mPoll">결과조회 API</button></div></div>
+    <div class="fr" id="cbRow"><span class="fl">callback_url</span><span class="fi">https://test.ashop.example/auth/kakaobank/callback</span></div>
+    <div class="fr"><span class="fl">점검 결과 조회 API</span><span class="fi">https://test.ashop.example/auth/check-result</span><span class="ptag">점검용 API · 제안 규격</span></div>
+  </div>
+  <div class="fnote"><span>점검 결과 조회 API · 점검 실행 ID별 최종 인증 처리 결과(SUCCESS / FAILURE)와 처리한 오류코드를 반환하는 테스트용 인터페이스로, 이번 제안에서 새로 정의합니다. 등록된 테스트 도메인 밖의 주소는 호출하지 않습니다.</span></div>
+
+  <div id="connOk" class="hide" style="margin-top:10px;font-size:11.5px;color:var(--teal);line-height:1.8">점검 환경 연결 확인 · ✓ callback_url이 허용된 테스트 도메인에 속함 &nbsp; ✓ 점검 결과 조회 API 규격 응답 &nbsp; ✓ 해당 제휴사에 허용된 테스트 환경</div>
+
+  <h4>② 점검 시나리오 선택</h4>
+  <p class="hint">시나리오마다 우리 서비스의 처리 정책을 정하면, 그 정책이 판정 기준이 됩니다.</p>
+  <div id="scnList"></div>
+  <div class="runbar">
+    <button class="btn" id="runBtn">점검 실행</button>
+    <div class="prog" id="prog"><i></i></div>
+    <span class="msg" id="runMsg"></span>
+  </div>
+
+  <div id="resultArea" class="hide">
+    <h4>③ 점검 결과</h4>
+    <p class="sum" id="sum"></p>
+    <table>
+      <thead><tr><th style="width:26%">시나리오</th><th style="width:28%">기대 결과<small>설정한 정책</small></th><th style="width:32%">관측 결과<small>점검 결과 조회 API 응답 기준</small></th><th>판정</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="ai" id="ai"></div>
+
+    <div class="lab" style="margin-top:28px">운영 전 체크리스트 <small>자동 판정 대상 아님 · 운영 전환 시 담당자 확인</small></div>
+    <div class="chk">
+      <label><input type="checkbox">암호화 키 · IV 보관 방식 <span class="who2">담당자 확인</span></label>
+      <label><input type="checkbox">수신한 CI · DI 등 개인정보 저장 방식 <span class="who2">담당자 확인</span></label>
+      <label><input type="checkbox">운영 환경 방화벽 등록 정보 제출 <span class="who2">담당자 확인</span></label>
+    </div>
+
+    <div class="foot">
+      <span class="msg">점검 결과 조회 API로 받은 결과만 판정합니다. 외부에서 확인할 수 없는 항목은 체크리스트로 분리합니다.</span>
+      <div style="display:flex;gap:6px;flex-shrink:0"><button class="btn gray" id="rerun">실패 항목 재점검</button><button class="btn" id="report">결과서 내려받기</button></div>
+    </div>
+  </div>
+</main>
+
+<main id="pageOld" class="hide">
+  <div class="banner"><h1>API 테스트</h1><p>카카오인증 테스트 환경에서 인증 연동을 진행해 볼 수 있습니다.<br>먼저 테스트 해보세요.</p><div class="ill"></div></div>
+  <h3>본인확인 API</h3>
+  <p class="cap">카카오뱅크 인증서를 통한 본인확인 요청</p>
+  <ul class="b">
+    <li>본인확인 API는 먼저 접근토큰 요청 API를 수행후 발급된 접근토큰(access_token)을 사용하여야 이용할 수 있습니다.</li>
+    <li>본인확인결과요청 API는 본인확인요청 API 응답의 composite_key가 필요합니다.</li>
+  </ul>
+  <h4>본인확인 API 테스트하기</h4>
+  <p class="hint">에디터 란에 값 수정이 가능합니다. <span style="color:var(--mute)">(기존 화면 요약 재현)</span></p>
+  <div class="lab">본인확인요청 데이터</div>
+  <div class="ed"><div class="ebar"><button class="eb">요청 데이터 초기화</button><button class="eb">응답 데이터 확인</button><button class="eb">복사</button></div>
+  <div class="code">POST /api/b2b/v1/identification
+Host: bapi.kakaobank.io:443
+Content-Type: application/json
+{
+  "corp_id": "KABANG_CERTAPI_PSEUDO",
+  "access_token": "", <span class="cm">//접근토큰요청API 결과값을 입력해 주세요</span>
+  "app_invoke_method": "APP_PUSH",
+  "req_privacy_info": ["CI", "DI", "NAME"],
+  ...
+}</div></div>
+  <div class="lab">본인확인요청 응답 데이터</div>
+  <div class="ed" style="height:50px"></div>
+  <div class="err"><span class="tri"></span><a>오류코드 확인하기</a></div>
+  <div class="jump" id="jumpBtn"><span>이 오류를 우리 서버가 제대로 처리하는지 점검하기 →</span><small>연동 사전점검 (신규 진입점)</small></div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let mode='cb';
+function cfg(){$('mCb').classList.toggle('on',mode==='cb');$('mPoll').classList.toggle('on',mode==='poll');$('cbRow').style.display=mode==='cb'?'flex':'none'}
+const POL={A:{n:'정책 A · 토큰 재발급 후 재요청',e:'토큰 재발급 후 본인확인 재요청'},B:{n:'정책 B · 인증 실패 처리',e:'인증 실패 처리'}};
+let pol='A';
+const S=[
+ {id:'ok',name:'정상 인증 완료',d:'인증 완료 후 성공 처리',code:'',exp:()=> '인증 성공 처리',obs:'최종 처리 SUCCESS',v:'pass'},
+ {id:'tok',name:'접근 토큰 만료',d:'샌드박스가 만료 응답을 재현하고, 설정한 처리 정책대로 동작하는지 확인',code:'AC9102',pol:true,exp:()=>POL[pol].e,obs:'AC9102 수신 후 최종 처리 SUCCESS',v:'fail',
+  ai:{t:'만료 응답을 받았지만 인증 성공으로 처리됐어요',o:'접근 토큰 만료 오류(AC9102)를 수신했지만, 점검 결과 조회 API 응답에서 해당 실행의 최종 처리가 SUCCESS로 확인됐습니다.',r:()=>pol==='A'?'만료 오류 분기에서 토큰 재발급 후 재요청으로 넘어가는지, 재요청 없이 성공 처리하는 경로가 없는지 확인하세요.':'만료 오류 분기에서 인증 실패로 처리되는지, 성공 처리로 넘어가는 경로가 없는지 확인하세요.',src:'근거 · 접근토큰 발급 API 가이드, 오류코드 AC9102'}},
+ {id:'mis',name:'가입자 정보 불일치',d:'불일치 결과 수신 시 인증 실패 처리',code:'AC1002',exp:()=>'인증 실패 처리',obs:'AC1002 처리 · 최종 처리 FAILURE',v:'pass'},
+ {id:'scope',name:'계약 범위 외 항목 요청',d:'corp_id에 등록된 계약 항목 밖의 개인정보를 요청하지 않는지 확인',code:'AC9111',exp:()=>'계약 항목만 요청',obs:'계약 외 항목 포함 요청 → AC9111 반환',v:'fail',
+  ai:{t:'계약 범위 밖 개인정보를 요청했어요',o:'요청 데이터의 req_privacy_info에 계약 항목(CI, DI, NAME)에 없는 항목이 포함되어 AC9111이 반환됐습니다.',r:()=>'계약된 항목 목록과 req_privacy_info 값을 비교해 범위 밖 항목을 제거하세요.',src:'근거 · 본인확인 API 가이드, 오류코드 AC9111'}},
+ {id:'exp',name:'사용자 미응답',d:'점검 기준 시간 안에 사용자가 인증하지 않을 때 실패 처리',code:'',exp:()=>'기준 시간 경과 후 인증 실패 처리',obs:'기준 시간 경과 후 최종 처리 FAILURE',v:'pass'}
+];
+function list(){
+  $('scnList').innerHTML=S.map(s=>`<div class="scn"><input type="checkbox" checked data-id="${s.id}"><div style="flex:1"><b>${s.name}</b>${s.code?`<span class="c">${s.code}</span>`:''}<p>${s.d}</p>${s.pol?`<div class="pol">처리 정책 <select id="polSel"><option value="A">${POL.A.n}</option><option value="B">${POL.B.n}</option></select></div>`:''}</div></div>`).join('');
+  $('polSel').value=pol;$('polSel').onchange=e=>{pol=e.target.value;if(!$('resultArea').classList.contains('hide'))render()};
+}
+const fixed=new Set();
+const vd=s=>fixed.has(s.id)?'pass':s.v;
+function render(sel){
+  const on=[...document.querySelectorAll('#scnList input:checked')].map(i=>i.dataset.id);
+  const L=S.filter(s=>on.includes(s.id));
+  const f=L.filter(s=>vd(s)==='fail').length;
+  $('sum').innerHTML=`자동 판정 <b>${L.length}건</b> · <span class="p">통과 ${L.length-f}</span> · <span class="f">실패 ${f}</span>`;
+  $('tbody').innerHTML=L.map(s=>{const v=vd(s);return `<tr class="r ${v==='fail'?'failr':''} ${s.id===sel?'sel':''}" data-id="${s.id}"><td><b>${s.name}</b>${s.code?`<br><span class="c">${s.code}</span>`:''}</td><td>${s.exp()}</td><td>${fixed.has(s.id)?'수정 후 기대 결과와 일치':s.obs}</td><td><span class="v v-${v}">${v==='fail'?'실패':'통과'}</span></td></tr>`}).join('');
+  document.querySelectorAll('tr.r').forEach(r=>r.onclick=()=>render(r.dataset.id));
+  const cur=S.find(s=>s.id===sel&&on.includes(s.id))||L.find(s=>vd(s)==='fail')||L[0];
+  if(cur&&!sel) document.querySelector(`tr[data-id="${cur.id}"]`)?.classList.add('sel');
+  ai(cur);$('rerun').disabled=!f;
+}
+function ai(s){
+  if(!s){$('ai').innerHTML='';return}
+  if(vd(s)==='fail'&&s.ai){
+    $('ai').innerHTML=`<div class="t"><span class="tag">AI 원인 분석</span><h5>${s.ai.t}</h5></div><p class="k">관측된 사실</p><p>${s.ai.o}</p><p class="k">점검 권장</p><p><b style="color:var(--ink)">${s.ai.r()}</b></p><div class="src">${s.ai.src}</div><p class="note">AI는 판정하지 않습니다. 판정은 설정한 정책과 점검 결과 조회 API 응답으로 이뤄집니다.</p>`;
+  } else {
+    $('ai').innerHTML=`<div class="t"><span class="tag" style="background:var(--teal)">통과</span><h5>${s.name}</h5></div><p>설정한 기대 결과와 점검용 API 응답이 일치합니다.</p>`;
+  }
+}
+function run(after){
+  const p=$('prog'),bar=p.firstElementChild;p.style.display='block';$('runBtn').disabled=true;let i=0;
+  const t=setInterval(()=>{i++;bar.style.width=(i/6*100)+'%';$('runMsg').textContent=i<2?'점검 환경 연결 확인 중 · 허용 도메인, 점검 결과 조회 API 규격 확인':`연결 확인 완료 · 시나리오 실행 중 ${Math.min(i-1,5)}/5`;
+    if(i>=6){clearInterval(t);setTimeout(()=>{p.style.display='none';bar.style.width=0;$('runMsg').textContent='점검 완료';$('runBtn').disabled=false;$('resultArea').classList.remove('hide');$('connOk').classList.remove('hide');after&&after();render();$('resultArea').scrollIntoView({behavior:'smooth'})},250)}},280);
+}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+$('runBtn').onclick=()=>run();
+$('rerun').onclick=()=>run(()=>S.filter(s=>s.v==='fail').forEach(s=>fixed.add(s.id)));
+$('report').onclick=()=>toast('결과서 생성 (시연) · 점검 일시, 설정 정책, 시나리오별 결과, 체크리스트 포함');
+$('mCb').onclick=()=>{mode='cb';cfg()};$('mPoll').onclick=()=>{mode='poll';cfg()};
+function go(pg){$('pageNew').classList.toggle('hide',pg!=='new');$('pageOld').classList.toggle('hide',pg!=='old');$('mCheck').classList.toggle('on',pg==='new');$('sOld').classList.toggle('on',pg==='old');$('mTest').classList.toggle('on',pg==='old');window.scrollTo(0,0)}
+document.querySelectorAll('[data-page]').forEach(e=>e.onclick=()=>go(e.dataset.page));
+$('jumpBtn').onclick=()=>go('new');
+$('mTest').onclick=()=>{const h=$('subTest').classList.toggle('hide');$('arTest').textContent=h?'⌄':'⌃'};
+cfg();list();
+</script>
+</body>
+</html>
