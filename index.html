@@ -96,6 +96,25 @@ tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf
 .ill3 .lens{position:absolute;left:30px;top:22px;width:34px;height:34px;border-radius:50%;border:4px solid #eceef3;background:rgba(93,95,111,.85);display:flex;align-items:center;justify-content:center}
 .ill3 .lens span{color:#8fb1ff;font-size:13px;font-weight:700}
 .ill3 .handle{position:absolute;left:61px;top:52px;width:5px;height:15px;background:#eceef3;border-radius:2px;transform:rotate(-45deg)}
+.rsum{display:flex;align-items:baseline;gap:10px;padding:14px 0 12px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.rsum .n{font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-0.02em}.rsum .n em{font-style:normal;color:var(--red)}
+.rsum .n small{font-size:13px;font-weight:600;color:var(--mute)}
+.rsum .t{font-size:13px;font-weight:600;color:var(--ink)}
+.rsum .round{margin-left:auto;font-size:11px;color:var(--sub)}
+table.rt td{padding:12px 8px;vertical-align:middle}
+table.rt tr.failr td{background:#fef8f7}table.rt tr.failr td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+table.rt tr.sel:not(.failr) td{background:#f7f8fa}table.rt tr.sel.failr td:first-child{box-shadow:inset 3px 0 0 var(--red)}table.rt tr.sel:not(.failr) td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+.act{font-weight:600;color:var(--ink)}.act.bad{color:var(--red);font-weight:700}
+.meta{display:block;font-size:10.5px;color:var(--mute);margin-top:3px}
+.ic{display:inline-flex;width:20px;height:20px}
+.ai2{margin-top:14px;border:1px solid var(--line);border-left:3px solid var(--red);padding:14px 16px;font-size:12px;line-height:1.7;background:#fff}
+.ai2.okb{border-left-color:var(--teal)}
+.ai2 .h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.ai2 .lb{display:inline-block;width:78px;color:var(--sub);font-size:11.5px}
+.ai2 .note{font-size:10.5px;color:var(--mute);margin-top:8px}
+.demo{margin-top:16px;padding:10px 14px;background:#f5f6f8;font-size:11.5px;color:var(--txt);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.demo b{color:var(--ink)}
+.hist{margin-top:12px;font-size:11px;color:var(--sub);line-height:1.8}.hist b{color:var(--ink);font-weight:600}.hist .f{color:var(--red)}.hist .p{color:var(--teal)}
 </style>
 </head>
 <body>
@@ -126,7 +145,7 @@ tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf
 <main id="pageNew">
   <div class="banner">
     <h1>연동 사전점검</h1>
-    <p>API 테스트로 요청과 응답을 확인했다면,<br>실패 상황까지 우리 서버가 올바르게 처리하는지 운영 전에 점검해 보세요.</p>
+    <p>API 테스트 이후, 인증 실패 응답을 우리 서버가<br>올바르게 처리하는지 운영 전에 점검합니다.</p>
     <div class="ill3"><div class="card"><i></i><i></i><i></i></div><div class="lens"><span>✓</span></div><div class="handle"></div></div>
   </div>
 
@@ -140,7 +159,7 @@ tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf
   </ul>
 
   <h4>① 테스트 환경 연결 및 검증 설정</h4>
-  <p class="hint">계약된 이용기관의 점검 권한을 확인한 뒤, 제휴사 테스트 서버를 연결해 인증 결과 처리를 검증합니다.</p>
+  <p class="hint">계약된 제휴사의 점검 권한을 확인한 뒤, 제휴사 테스트 서버를 연결해 인증 결과 처리를 검증합니다.</p>
   <div class="form">
     <div class="fr"><span class="fl">corp_id</span><span class="fi">ASHOP_CORP_01</span></div>
     <div class="fr"><span class="fl">사전점검용 인증 토큰</span><span class="fi">PRECHECK-••••••••••••</span><span class="ptag" style="color:var(--sub);border-color:#cfd3de">전용 발급 · 기간 제한</span></div>
@@ -154,7 +173,7 @@ tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf
   <div id="connOk" class="hide" style="margin-top:10px;font-size:11.5px;color:var(--teal);line-height:1.8">점검 환경 연결 확인 · ✓ callback_url이 허용된 테스트 도메인에 속함 &nbsp; ✓ 점검 결과 조회 API 규격 응답 &nbsp; ✓ 해당 제휴사에 허용된 테스트 환경</div>
 
   <h4>② 점검 시나리오 선택</h4>
-  <p class="hint">시나리오마다 우리 서비스의 처리 정책을 정하면, 그 정책이 판정 기준이 됩니다.</p>
+  <p class="hint">시나리오별 기대 처리와 점검 결과 조회 API가 반환한 처리 결과(SUCCESS · FAILURE)를 비교합니다.</p>
   <div id="scnList"></div>
   <div class="runbar">
     <button class="btn" id="runBtn">점검 실행</button>
@@ -164,24 +183,19 @@ tr.r{cursor:pointer}tr.r:hover td{background:#fafbfd}tr.failr td{background:#fdf
 
   <div id="resultArea" class="hide">
     <h4>③ 점검 결과</h4>
-    <p class="sum" id="sum"></p>
-    <table>
-      <thead><tr><th style="width:26%">시나리오</th><th style="width:28%">기대 결과<small>설정한 정책</small></th><th style="width:32%">관측 결과<small>점검 결과 조회 API 응답 기준</small></th><th>판정</th></tr></thead>
+    <div id="sum"></div>
+    <table class="rt">
+      <thead><tr><th style="width:30%">시나리오</th><th style="width:24%">기대 처리</th><th style="width:34%">실제 처리<small>우리 서버 응답 기준</small></th><th style="text-align:center">판정</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
-    <div class="ai" id="ai"></div>
-
-    <div class="lab" style="margin-top:28px">운영 전 체크리스트 <small>자동 판정 대상 아님 · 운영 전환 시 담당자 확인</small></div>
-    <div class="chk">
-      <label><input type="checkbox">암호화 키 · IV 보관 방식 <span class="who2">담당자 확인</span></label>
-      <label><input type="checkbox">수신한 CI · DI 등 개인정보 저장 방식 <span class="who2">담당자 확인</span></label>
-      <label><input type="checkbox">운영 환경 방화벽 등록 정보 제출 <span class="who2">담당자 확인</span></label>
-    </div>
+    <div id="ai"></div>
+    <div class="demo" id="demo"></div>
+    <div class="hist" id="hist"></div>
 
     <div class="foot">
-      <span class="msg">점검 결과 조회 API로 받은 결과만 판정합니다. 외부에서 확인할 수 없는 항목은 체크리스트로 분리합니다.</span>
-      <div style="display:flex;gap:6px;flex-shrink:0"><button class="btn gray" id="rerun">실패 항목 재점검</button><button class="btn" id="report">결과서 내려받기</button></div>
-    </div>
+      <span class="msg">판정은 점검 결과 조회 API로 받은 결과로만 이뤄집니다.</span>
+      <div style="display:flex;gap:6px;flex-shrink:0"><button class="btn gray hide" id="rerun">재점검</button><button class="btn" id="report">결과서 내려받기</button></div>
+    </div></div>
   </div>
 </main>
 
@@ -219,50 +233,59 @@ Content-Type: application/json
 const $=id=>document.getElementById(id);
 let mode='cb';
 function cfg(){$('mCb').classList.toggle('on',mode==='cb');$('mPoll').classList.toggle('on',mode==='poll');$('cbRow').style.display=mode==='cb'?'flex':'none'}
-const POL={A:{n:'정책 A · 토큰 재발급 후 재요청',e:'토큰 재발급 후 본인확인 재요청'},B:{n:'정책 B · 인증 실패 처리',e:'인증 실패 처리'}};
-let pol='A';
 const S=[
- {id:'ok',name:'정상 인증 완료',d:'인증 완료 후 성공 처리',code:'',exp:()=> '인증 성공 처리',obs:'최종 처리 SUCCESS',v:'pass'},
- {id:'tok',name:'접근 토큰 만료',d:'샌드박스가 만료 응답을 재현하고, 설정한 처리 정책대로 동작하는지 확인',code:'AC9102',pol:true,exp:()=>POL[pol].e,obs:'AC9102 수신 후 최종 처리 SUCCESS',v:'fail',
-  ai:{t:'만료 응답을 받았지만 인증 성공으로 처리됐어요',o:'접근 토큰 만료 오류(AC9102)를 수신했지만, 점검 결과 조회 API 응답에서 해당 실행의 최종 처리가 SUCCESS로 확인됐습니다.',r:()=>pol==='A'?'만료 오류 분기에서 토큰 재발급 후 재요청으로 넘어가는지, 재요청 없이 성공 처리하는 경로가 없는지 확인하세요.':'만료 오류 분기에서 인증 실패로 처리되는지, 성공 처리로 넘어가는 경로가 없는지 확인하세요.',src:'근거 · 접근토큰 발급 API 가이드, 오류코드 AC9102'}},
- {id:'mis',name:'가입자 정보 불일치',d:'불일치 결과 수신 시 인증 실패 처리',code:'AC1002',exp:()=>'인증 실패 처리',obs:'AC1002 처리 · 최종 처리 FAILURE',v:'pass'},
- {id:'scope',name:'계약 범위 외 항목 요청',d:'corp_id에 등록된 계약 항목 밖의 개인정보를 요청하지 않는지 확인',code:'AC9111',exp:()=>'계약 항목만 요청',obs:'계약 외 항목 포함 요청 → AC9111 반환',v:'fail',
-  ai:{t:'계약 범위 밖 개인정보를 요청했어요',o:'요청 데이터의 req_privacy_info에 계약 항목(CI, DI, NAME)에 없는 항목이 포함되어 AC9111이 반환됐습니다.',r:()=>'계약된 항목 목록과 req_privacy_info 값을 비교해 범위 밖 항목을 제거하세요.',src:'근거 · 본인확인 API 가이드, 오류코드 AC9111'}},
- {id:'exp',name:'사용자 미응답',d:'점검 기준 시간 안에 사용자가 인증하지 않을 때 실패 처리',code:'',exp:()=>'기준 시간 경과 후 인증 실패 처리',obs:'기준 시간 경과 후 최종 처리 FAILURE',v:'pass'}
+ {id:'ok',name:'정상 인증 완료',d:'인증 완료 시 가입 허용 여부',code:'AC0000',E:'가입 허용',A:'가입 허용',meta:'AC0000 수신 · SUCCESS 반환'},
+ {id:'cancel',name:'사용자 인증 취소',d:'취소 응답(HTTP 200) 수신 시 가입 차단 여부',code:'AC1000',E:'가입 차단',A:'가입 허용',meta:'AC1000 수신 · SUCCESS 반환',bad:true,
+  ai:{t:'인증 취소(AC1000) 응답에 가입을 허용했습니다.',o:'HTTP 200을 인증 성공으로 판단했을 가능성이 있습니다.',r:'response_code가 AC1000일 때 가입을 차단하도록 처리했는지 확인하세요.',src:'본인확인 API 가이드 · 오류코드 AC1000'}},
+ {id:'exp',name:'사용자 미응답',d:'미응답(HTTP 200) 수신 시 가입 차단 여부',code:'AC1001',E:'가입 차단',A:'가입 차단',meta:'AC1001 수신 · FAILURE 반환'},
+ {id:'mis',name:'가입자 정보 불일치',d:'정보 불일치 수신 시 가입 차단 여부',code:'AC1002',E:'가입 차단',A:'가입 차단',meta:'AC1002 수신 · FAILURE 반환'}
 ];
 function list(){
-  $('scnList').innerHTML=S.map(s=>`<div class="scn"><input type="checkbox" checked data-id="${s.id}"><div style="flex:1"><b>${s.name}</b>${s.code?`<span class="c">${s.code}</span>`:''}<p>${s.d}</p>${s.pol?`<div class="pol">처리 정책 <select id="polSel"><option value="A">${POL.A.n}</option><option value="B">${POL.B.n}</option></select></div>`:''}</div></div>`).join('');
-  $('polSel').value=pol;$('polSel').onchange=e=>{pol=e.target.value;if(!$('resultArea').classList.contains('hide'))render()};
+  $('scnList').innerHTML=S.map(s=>`<div class="scn"><input type="checkbox" checked data-id="${s.id}"><div style="flex:1"><b>${s.name}</b><span class="c">${s.code}</span><p>${s.d}</p></div><span style="font-size:11.5px;color:var(--sub);white-space:nowrap">기대 처리 <b style="font-size:11.5px;color:var(--ink)">${s.E}</b></span></div>`).join('');
 }
-const fixed=new Set();
-const vd=s=>fixed.has(s.id)?'pass':s.v;
+const ICON={ok:'<svg class="ic" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="#3f8f8a" stroke-width="1.5"/><path d="M6.2 10.3l2.6 2.5 5-5.2" fill="none" stroke="#3f8f8a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',bad:'<svg class="ic" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="#e0473c"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'};
+let round=0,running=false;
+let checkedScenarios=[];const hist=[];const fixedSet=new Set();
+const isBad=s=>s.bad&&!fixedSet.has(s.id);
+function stamp(){const d=new Date();return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
 function render(sel){
-  const on=[...document.querySelectorAll('#scnList input:checked')].map(i=>i.dataset.id);
-  const L=S.filter(s=>on.includes(s.id));
-  const f=L.filter(s=>vd(s)==='fail').length;
-  $('sum').innerHTML=`자동 판정 <b>${L.length}건</b> · <span class="p">통과 ${L.length-f}</span> · <span class="f">실패 ${f}</span>`;
-  $('tbody').innerHTML=L.map(s=>{const v=vd(s);return `<tr class="r ${v==='fail'?'failr':''} ${s.id===sel?'sel':''}" data-id="${s.id}"><td><b>${s.name}</b>${s.code?`<br><span class="c">${s.code}</span>`:''}</td><td>${s.exp()}</td><td>${fixed.has(s.id)?'수정 후 기대 결과와 일치':s.obs}</td><td><span class="v v-${v}">${v==='fail'?'실패':'통과'}</span></td></tr>`}).join('');
+  const L=checkedScenarios;
+  const B=L.filter(isBad);const f=B.length;
+  $('sum').innerHTML=`<div class="rsum"><span class="n" style="font-size:18px">${f?`${L.length}건 중 <em>${f}건</em> 처리 오류 발견`:`${L.length}건 모두 정상 처리`}</span><span class="round">${round}차 점검</span></div>`;
+  $('tbody').innerHTML=L.map(s=>{const b=isBad(s);const act=b?s.A:s.E;const meta=fixedSet.has(s.id)?`${round}차에서 새로 수집한 결과`:(b?s.meta:'');
+    return `<tr class="r ${b?'failr':''} ${s.id===sel?'sel':''}" data-id="${s.id}"><td><b>${s.name}</b><br><span class="c">${s.code}</span></td><td>${s.E}</td><td><span class="act ${b?'bad':''}">${act}</span>${meta?`<span class="meta" style="${b?'color:var(--red);opacity:.8':''}">${meta}</span>`:''}</td><td style="text-align:center">${b?ICON.bad:ICON.ok}</td></tr>`}).join('');
   document.querySelectorAll('tr.r').forEach(r=>r.onclick=()=>render(r.dataset.id));
-  const cur=S.find(s=>s.id===sel&&on.includes(s.id))||L.find(s=>vd(s)==='fail')||L[0];
-  if(cur&&!sel) document.querySelector(`tr[data-id="${cur.id}"]`)?.classList.add('sel');
-  ai(cur);$('rerun').disabled=!f;
+  const cur=L.find(s=>s.id===sel)||B[0]||L[0];
+  if(cur&&!sel&&isBad(cur)) document.querySelector(`tr[data-id="${cur.id}"]`)?.classList.add('sel');
+  ai(cur);demo(f);
+  $('hist').innerHTML=hist.length?'점검 이력 · '+hist.map(h=>`<b>${h.r}차</b> ${h.t} <span class="${h.f?'f':'p'}">${h.f?`오류 ${h.f}건`:`해결`}</span>`).join(' &nbsp;→&nbsp; '):'';
 }
 function ai(s){
-  if(!s){$('ai').innerHTML='';return}
-  if(vd(s)==='fail'&&s.ai){
-    $('ai').innerHTML=`<div class="t"><span class="tag">AI 원인 분석</span><h5>${s.ai.t}</h5></div><p class="k">관측된 사실</p><p>${s.ai.o}</p><p class="k">점검 권장</p><p><b style="color:var(--ink)">${s.ai.r()}</b></p><div class="src">${s.ai.src}</div><p class="note">AI는 판정하지 않습니다. 판정은 설정한 정책과 점검 결과 조회 API 응답으로 이뤄집니다.</p>`;
-  } else {
-    $('ai').innerHTML=`<div class="t"><span class="tag" style="background:var(--teal)">통과</span><h5>${s.name}</h5></div><p>설정한 기대 결과와 점검용 API 응답이 일치합니다.</p>`;
-  }
+  if(!s||!isBad(s)||!s.ai){$('ai').innerHTML='';return}
+  $('ai').innerHTML=`<div class="ai2"><div class="h">${ICON.bad.replace('class="ic"','class="ic" style="width:16px;height:16px"')}AI 오류 원인 분석</div><p style="font-weight:700;color:var(--ink);margin-bottom:4px">${s.ai.t}</p><p><span class="lb">원인</span>${s.ai.o}</p><p><span class="lb">확인할 사항</span><b style="color:var(--ink)">${s.ai.r}</b></p><p class="note">판정은 규칙 비교로 수행하며, AI는 가능한 원인과 확인 사항을 안내합니다.</p></div>`;
+}
+function demo(f){
+  if(!f){$('demo').style.display='none';$('demo').innerHTML='';return}
+  $('demo').style.display='flex';
+  $('demo').innerHTML=`<span>실제 서비스에서는 제휴사가 코드를 수정한 뒤 재점검하면, <b>새 결과를 수집해 다시 판정</b>합니다.</span><button class="btn gray" id="fixBtn" style="flex-shrink:0;padding:7px 12px;font-size:11.5px">수정 후 재점검 예시 보기</button>`;
+  $('fixBtn').onclick=()=>run(()=>{round++;checkedScenarios.filter(isBad).forEach(s=>fixedSet.add(s.id));hist.push({r:round,t:stamp(),f:checkedScenarios.filter(isBad).length})});
 }
 function run(after){
+  if(running)return;
+  running=true;
   const p=$('prog'),bar=p.firstElementChild;p.style.display='block';$('runBtn').disabled=true;let i=0;
-  const t=setInterval(()=>{i++;bar.style.width=(i/6*100)+'%';$('runMsg').textContent=i<2?'점검 환경 연결 확인 중 · 허용 도메인, 점검 결과 조회 API 규격 확인':`연결 확인 완료 · 시나리오 실행 중 ${Math.min(i-1,5)}/5`;
-    if(i>=6){clearInterval(t);setTimeout(()=>{p.style.display='none';bar.style.width=0;$('runMsg').textContent='점검 완료';$('runBtn').disabled=false;$('resultArea').classList.remove('hide');$('connOk').classList.remove('hide');after&&after();render();$('resultArea').scrollIntoView({behavior:'smooth'})},250)}},280);
+  const t=setInterval(()=>{i++;bar.style.width=(i/6*100)+'%';$('runMsg').textContent=i<2?'점검 환경 연결 확인 중 · 허용 도메인, 점검 결과 조회 API 규격 확인':`연결 확인 완료 · 시나리오 실행 중 ${Math.min(i-1,checkedScenarios.length)}/${checkedScenarios.length}`;
+    if(i>=6){clearInterval(t);setTimeout(()=>{p.style.display='none';bar.style.width=0;$('runMsg').textContent='점검 완료';running=false;$('runBtn').disabled=false;$('resultArea').classList.remove('hide');$('connOk').classList.remove('hide');after&&after();render();$('resultArea').scrollIntoView({behavior:'smooth'})},250)}},280);
 }
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
-$('runBtn').onclick=()=>run();
-$('rerun').onclick=()=>run(()=>S.filter(s=>s.v==='fail').forEach(s=>fixed.add(s.id)));
+$('runBtn').onclick=()=>{
+  if(running)return;
+  const selected=new Set([...document.querySelectorAll('#scnList input:checked')].map(input=>input.dataset.id));
+  if(!selected.size){toast('점검할 시나리오를 하나 이상 선택하세요.');return}
+  checkedScenarios=S.filter(s=>selected.has(s.id));
+  run(()=>{round=1;fixedSet.clear();hist.length=0;hist.push({r:round,t:stamp(),f:checkedScenarios.filter(isBad).length})});
+};
+
 $('report').onclick=()=>toast('결과서 생성 (시연) · 점검 일시, 설정 정책, 시나리오별 결과, 체크리스트 포함');
 $('mCb').onclick=()=>{mode='cb';cfg()};$('mPoll').onclick=()=>{mode='poll';cfg()};
 function go(pg){$('pageNew').classList.toggle('hide',pg!=='new');$('pageOld').classList.toggle('hide',pg!=='old');$('mCheck').classList.toggle('on',pg==='new');$('sOld').classList.toggle('on',pg==='old');$('mTest').classList.toggle('on',pg==='old');window.scrollTo(0,0)}
@@ -273,4 +296,3 @@ cfg();list();
 </script>
 </body>
 </html>
-
